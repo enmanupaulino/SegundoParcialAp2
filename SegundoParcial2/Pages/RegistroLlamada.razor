@@ -1,0 +1,111 @@
+﻿@page "/RegistroLlamada"
+@using SegundoParcial2.Models
+@using SegundoParcial2.Controllers
+
+<h3>Registro Llamada</h3>
+<EditForm Model="@registros" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class=" form-group">
+        <label for=" RegistroId">Id</label>
+        <InputNumber @bind-Value="registros.RegistroId"></InputNumber>
+        <button type="button" class=" btn-primary " @onclick="Buscar">Buscar</button>
+        <ValidationMessage For="@(()=>registros.RegistroId)" />
+
+    </div>
+    <div class="form-group">
+        <label for=" Descripcion">Descripcion</label>
+        <InputText @bind-Value="registros.Descripcion" class="form-group" />
+        <ValidationMessage For="@(()=>registros.Descripcion)" />
+    </div>
+    <div class="form-group">
+        <label for=" Problema">Problema</label>
+        <InputText @bind-Value="registros.Problema" class="form-group" />
+        <ValidationMessage For="@(()=>registros.Problema)" />
+    </div>
+    <div class="form-group">
+        <label for=" Solucion">Solucion</label>
+        <InputText @bind-Value="registros.Solucion" class="form-group" />
+        <ValidationMessage For="@(()=>registros.Solucion)" />
+    </div>
+
+    <div class="form-group">
+
+        <button type="submit" class="btn btn-primary"> Guardar</button>
+        <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar</button>
+        <button type="button" class="btn btn-danger" @onclick="Limpiar">Limpiar</button>
+    </div>
+   
+    <h5>@Mensaje</h5>
+
+
+
+</EditForm>
+
+@code {
+   
+    public Registros registros = new Registros();
+    public string Mensaje;
+
+
+    public void Guardar()
+    {
+        ControllersLlamadas controllersLlamadas = new ControllersLlamadas();
+       
+        
+        if (controllersLlamadas.Guardar(registros))
+        {
+            this.registros = new Registros();
+            Mensaje = "Guardado";
+
+        }
+        else
+        {
+            this.registros = new Registros();
+            Mensaje = "error al guardar";
+        }
+
+    }
+    public void Limpiar()
+    {
+        this.registros = new Registros();
+
+    }
+    public void Buscar()
+    {
+        ControllersLlamadas controllersLlamadas = new ControllersLlamadas();
+
+        var registro = controllersLlamadas.Buscar(registros.RegistroId);
+        if (registro != null)
+        {
+            registros = registro;
+            Mensaje = "inscripcion encontrada";
+        }
+        else
+        {
+            this.registros = new Registros();
+            Mensaje = "inscripcion no encontrada";
+        }
+
+    }
+    public void Eliminar()
+    {
+         ControllersLlamadas controllersLlamadas = new ControllersLlamadas();
+
+        var registro = controllersLlamadas.Buscar(registros.RegistroId);
+        if (registro != null)
+        {
+            if (controllersLlamadas.Eliminar(registro.RegistroId))
+            {
+                this.registros = new Registros();
+                Mensaje = "Inscripcion eliminada";
+            }
+            else
+            {
+                this.registros = new Registros();
+                Mensaje = "Error al Eliminar ";
+            }
+        }
+    }
+
+
+}
