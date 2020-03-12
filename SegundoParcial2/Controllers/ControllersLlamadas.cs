@@ -21,7 +21,7 @@ namespace SegundoParcial2.Controllers
             }
             else if (Buscar(registros.RegistroId) == null)
             {
-                paso = false;
+                paso = true;
             }
             else
             {
