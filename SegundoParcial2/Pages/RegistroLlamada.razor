@@ -1,4 +1,4 @@
-﻿@page "/RegistroLlamada"
+﻿@page "/RegistroLlamada/{CurrentId:int}"
 @using SegundoParcial2.Models
 @using SegundoParcial2.Controllers
 
@@ -28,13 +28,50 @@
         <ValidationMessage For="@(()=>registros.Solucion)" />
     </div>
 
+
+
+    
+        
+    <button type="button" class="btn btn-outline-info" @onclick="Agregar">Agregar</button>
+
+    <br />
+
+    <div>
+        <table class="table">
+            <thead >
+                <tr>
+                    <th>Id</th>
+                    <th>RegistroId</th>
+                    <th>Problema</th>
+                    <th>Solucion</th>
+                    
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody >
+                @foreach (var item in registros.Detalle)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.RegistroId</td>
+                        <th>@item.Problema</th>
+                        <td>@item.Solucion</td>
+                       
+                        
+                       
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
     <div class="form-group">
 
         <button type="submit" class="btn btn-primary"> Guardar</button>
         <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar</button>
         <button type="button" class="btn btn-danger" @onclick="Limpiar">Limpiar</button>
     </div>
-   
+
     <h5>@Mensaje</h5>
 
 
@@ -42,26 +79,75 @@
 </EditForm>
 
 @code {
-   
+    List<Registros> lista = new List<Registros>();
+
+
+
+
+
+
+
+
+    private void Agregar()
+    {
+
+        {
+            registros.Detalle.Add(new RegistroDetalle()
+            {
+
+                RegistroId = registros.RegistroId,
+                Solucion = registros.Solucion,
+                Problema = registros.Problema,
+
+            });
+        }
+
+    }
+
+
+
+
+
+
+
+
+
     public Registros registros = new Registros();
     public string Mensaje;
+    private String problema;
+    private String solucion;
+    private int Id;
 
+    [Parameter]
+    public int CurrentId { get; set; }
+    protected override void OnInitialized()
+    {
+        ControllersLlamadas controllersLlamadas = new ControllersLlamadas();
+        if (CurrentId != 0)
+        {
+            registros= controllersLlamadas.Buscar(CurrentId);
+        }
+    }
 
     public void Guardar()
     {
         ControllersLlamadas controllersLlamadas = new ControllersLlamadas();
-       
-        
+
+
         if (controllersLlamadas.Guardar(registros))
         {
+            Mensaje = "Guardado correctamente";
             this.registros = new Registros();
-            Mensaje = "Guardado";
+            problema = string.Empty;
+            solucion = string.Empty;
+            Id = 0;
 
         }
         else
         {
+
+            Mensaje = "Guardado";
             this.registros = new Registros();
-            Mensaje = "error al guardar";
         }
 
     }
@@ -78,18 +164,18 @@
         if (registro != null)
         {
             registros = registro;
-            Mensaje = "inscripcion encontrada";
+            Mensaje = "LLamada encontrada";
         }
         else
         {
             this.registros = new Registros();
-            Mensaje = "inscripcion no encontrada";
+            Mensaje = "Llamada no encontrada";
         }
 
     }
     public void Eliminar()
     {
-         ControllersLlamadas controllersLlamadas = new ControllersLlamadas();
+        ControllersLlamadas controllersLlamadas = new ControllersLlamadas();
 
         var registro = controllersLlamadas.Buscar(registros.RegistroId);
         if (registro != null)
@@ -97,7 +183,7 @@
             if (controllersLlamadas.Eliminar(registro.RegistroId))
             {
                 this.registros = new Registros();
-                Mensaje = "Inscripcion eliminada";
+                Mensaje = "LLamada eliminada";
             }
             else
             {

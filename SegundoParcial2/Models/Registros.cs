@@ -11,8 +11,11 @@ namespace SegundoParcial2.Models
     {
         [Key]
         public int RegistroId { get; set; }
+        [Required(ErrorMessage ="Debe hacer alguna Descripcion")]
         public string Descripcion { get; set; }
+        [Required(ErrorMessage = "Debe hacer alguna Problema")]
         public string Problema { get; set; }
+        [Required(ErrorMessage = "Debe hacer alguna Solucion")]
         public string Solucion { get; set; }
         
         [ForeignKey("RegistroId")]

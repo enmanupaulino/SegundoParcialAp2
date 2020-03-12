@@ -11,14 +11,14 @@ namespace SegundoParcial2.Models
         [Key]
         public int Id { get; set; }
         public int RegistroId { get; set; }
-        public string Descripcion { get; set; }
+        public string Problema { get; set; }
         public string Solucion { get; set; }
 
         public RegistroDetalle()
         {
             Id = 0;
             RegistroId = 0;
-            Descripcion = string.Empty;
+            Problema = string.Empty;
             Solucion = string.Empty;
         }
     }

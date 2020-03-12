@@ -1,7 +1,41 @@
 ﻿@page "/ConsultaLlamada"
 
-<h3>Component</h3>
+@using SegundoParcial2.Controllers
+@using SegundoParcial2.Models
+
+<h3>Consulta</h3>
+<table class=" table">
+    <thead>
+        <tr>
+            <th>RegsitroId</th>
+            <th>Descripcion</th>
+         
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in lista)
+        {
+            <tr>
+                <th>@item.RegistroId</th>
+                <th>@item.Descripcion</th>
+              
+                
+                <td><a class=" btn btn-dark" href="/RegistroLlamada/@item.RegistroId"> Ver</a></td>
+
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
+
+
+    List<Registros> lista;
+    protected override void OnInitialized()
+    {
+        ControllersLlamadas controllersLlamadas= new ControllersLlamadas();
+        lista = controllersLlamadas.GetRegistros(e => true);
+    }
 
 }

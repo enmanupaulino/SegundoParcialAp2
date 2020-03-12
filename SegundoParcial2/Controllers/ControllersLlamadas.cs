@@ -1,4 +1,5 @@
-﻿using SegundoParcial2.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SegundoParcial2.Data;
 using SegundoParcial2.Models;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,15 @@ namespace SegundoParcial2.Controllers
             Contexto db = new Contexto();
             if (registros.RegistroId == 0)
             {
-                paso = Insertar(registros);
+                Insertar(registros);
+            }
+            else if (Buscar(registros.RegistroId) == null)
+            {
+                paso = false;
             }
             else
             {
-                paso = Modificar(registros);
+                Modificar(registros);
             }
             return paso;
         }
@@ -42,14 +47,12 @@ namespace SegundoParcial2.Controllers
         {
             Contexto db = new Contexto();
             Registros registro = new Registros();
-            try
-            {
-                registro = db.registros.Find(Id);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+           
+            
+                registro= db.registros.Where(A => A.RegistroId== Id)
+                    .Include(A => A.Detalle).FirstOrDefault();
+           
+            
             return registro;
         }
         public bool Modificar(Registros registros)
@@ -57,9 +60,27 @@ namespace SegundoParcial2.Controllers
             bool paso = false;
             Contexto db = new Contexto();
 
-            db.registros.Add(registros);
-            db.Entry(registros).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            var anterior = Buscar(registros.RegistroId);
+
+            foreach (var item in registros.Detalle)
+            {
+                if (item.Id == 0)
+                {
+                    db.Entry(item).State = EntityState.Added;
+                }
+            }
+
+            foreach (var item in anterior.Detalle)
+            {
+                if (!registros.Detalle.Any(A => A.Id== item.Id))
+                {
+                    db.Entry(item).State = EntityState.Deleted;
+                }
+            }
+
+            db.Entry(registros).State = EntityState.Modified;
             paso = db.SaveChanges() > 0;
+
 
             return paso;
         }
@@ -67,16 +88,19 @@ namespace SegundoParcial2.Controllers
         {
             bool paso = false;
             Contexto db = new Contexto();
-            Registros registro = new Registros();
+          
 
 
-            registro = db.registros.Find(Id);
-            db.Entry(registro).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
-            paso = db.SaveChanges() > 0;
+             Registros registro = db.registros.Find(Id);
+            if (registro != null)
+            {
+                db.Entry(registro).State = EntityState.Deleted;
+                paso = db.SaveChanges() > 0;
+            }
 
             return paso;
         }
-        public List<Registros> GetAsignaturas(Expression<Func<Registros, bool>> expression)
+        public List<Registros> GetRegistros(Expression<Func<Registros, bool>> expression)
         {
             List<Registros> lista;
             Contexto db = new Contexto();
